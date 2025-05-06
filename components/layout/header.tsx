@@ -8,6 +8,7 @@ import { Menu } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 const navItems = [
 	{ href: "/", label: "Home" },
@@ -23,10 +24,13 @@ export default function Header() {
 		<header className='sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
 			<div className='container flex h-16 items-center justify-between mx-auto'>
 				<Link href='/' className='flex items-center gap-2 font-semibold'>
-					<div className='rounded-lg bg-gradient-to-br from-primary/80 to-primary p-1.5'>
-						<span className='text-lg text-primary-foreground'>D</span>
+					<div className='rounded-lg bg-gradient-to-br from-primary/80 to-primary'>
+						<Image
+							src={require("../../assets/images/Dearly_Logo.png")}
+							alt='Dearly Logo'
+							className='w-14 h-14 rounded-lg'
+						/>
 					</div>
-					<span className='hidden sm:inline-block'>Dearly</span>
 				</Link>
 
 				<nav className='hidden md:flex gap-6 mx-6'>
