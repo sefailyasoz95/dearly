@@ -1,28 +1,37 @@
-import { createBrowserClient, createServerClient } from "@supabase/ssr";
-import { type CookieOptions } from "@supabase/ssr";
+import { createServerClient } from "@supabase/ssr";
+import type { CookieOptions } from "@supabase/ssr";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-// Middleware client
-export const createMiddleware = async (context: { cookies: any }) => {
-	const cookieStore = context.cookies();
+/**
+ * Accepts a raw cookie string and returns a Supabase middleware client.
+ */
+export const createMiddleware = async ({
+  cookies,
+}: {
+  cookies: () => string;
+}) => {
+  let cookieHeader = cookies();
 
-	return createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-		cookies: {
-			get(name: string) {
-				return cookieStore.get(name)?.value;
-			},
-			set(name: string, value: string, options: CookieOptions) {
-				try {
-					cookieStore.set(name, value, options);
-				} catch (error) {}
-			},
-			remove(name: string, options: CookieOptions) {
-				try {
-					cookieStore.set(name, "", { ...options, maxAge: -1 });
-				} catch (error) {}
-			},
-		},
-	});
+  // Store updated cookies here to be set later in the middleware response
+  const updatedCookies: Record<string, string> = {};
+
+  return createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    cookies: {
+      get(name: string) {
+        const match = cookieHeader.match(new RegExp(`${name}=([^;]*)`));
+        return match?.[1];
+      },
+      set(name: string, value: string, options?: CookieOptions) {
+        // Store the cookie update (you can set this on the response if needed)
+        const serialized = `${name}=${value}`;
+        updatedCookies[name] = serialized;
+      },
+      remove(name: string, options?: CookieOptions) {
+        // Invalidate the cookie
+        updatedCookies[name] = `${name}=; Max-Age=0`;
+      },
+    },
+  });
 };

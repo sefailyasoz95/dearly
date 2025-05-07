@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { z } from "zod";
 import { useState } from "react";
@@ -39,7 +39,7 @@ export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-  
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -49,15 +49,14 @@ export default function SignUpPage() {
       password: "",
     },
   });
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       setIsLoading(true);
-      
-      const response = await fetch('/api/auth/signup', {
-        method: 'POST',
+
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           firstName: values.firstName,
@@ -70,7 +69,7 @@ export default function SignUpPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Something went wrong');
+        throw new Error(data.error || "Something went wrong");
       }
 
       toast({
@@ -78,11 +77,12 @@ export default function SignUpPage() {
         description: "Please check your email to verify your account.",
       });
 
-      router.push('/login');
+      router.push("/login");
     } catch (error) {
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Something went wrong",
+        description:
+          error instanceof Error ? error.message : "Something went wrong",
         variant: "destructive",
       });
     } finally {
@@ -96,8 +96,8 @@ export default function SignUpPage() {
         <div className="absolute inset-0 bg-gradient-to-br from-chart-2 to-chart-3">
           <div className="absolute inset-0 bg-grid-white/[0.05] [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]" />
         </div>
-        
-        <motion.div 
+
+        <motion.div
           className="relative z-20 flex items-center text-lg font-medium"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -108,8 +108,8 @@ export default function SignUpPage() {
           </div>
           Dearly
         </motion.div>
-        
-        <motion.div 
+
+        <motion.div
           className="relative z-20 mt-auto"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -117,22 +117,26 @@ export default function SignUpPage() {
         >
           <blockquote className="space-y-2">
             <p className="text-lg">
-              "This platform has completely transformed how we store and share our family memories. It's beautifully designed and so easy to use!"
+              "This platform has completely transformed how we store and share
+              our family memories. It's beautifully designed and so easy to
+              use!"
             </p>
             <footer className="text-sm">The Dearly Team</footer>
           </blockquote>
         </motion.div>
       </div>
-      
+
       <div className="lg:p-8">
         <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px] md:w-[400px]">
-          <motion.div 
+          <motion.div
             className="flex flex-col space-y-2 text-center"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <h1 className="text-2xl font-semibold tracking-tight">Create an account</h1>
+            <h1 className="text-2xl font-semibold tracking-tight">
+              Create an account
+            </h1>
             <p className="text-sm text-muted-foreground">
               Enter your information below to create your account
             </p>
@@ -144,7 +148,10 @@ export default function SignUpPage() {
             transition={{ duration: 0.5, delay: 0.1 }}
           >
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-6"
+              >
                 <FormField
                   control={form.control}
                   name="firstName"
@@ -191,7 +198,11 @@ export default function SignUpPage() {
                     <FormItem>
                       <FormLabel>Password</FormLabel>
                       <FormControl>
-                        <Input type="password" placeholder="Create a password" {...field} />
+                        <Input
+                          type="password"
+                          placeholder="Create a password"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -207,7 +218,7 @@ export default function SignUpPage() {
             </Form>
           </motion.div>
 
-          <motion.p 
+          <motion.p
             className="px-8 text-center text-sm text-muted-foreground"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -229,15 +240,18 @@ export default function SignUpPage() {
             </Link>
             .
           </motion.p>
-          
-          <motion.div 
+
+          <motion.div
             className="text-center text-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
             Already have an account?{" "}
-            <Link href="/login" className="font-medium text-primary hover:underline">
+            <Link
+              href="/login"
+              className="font-medium text-primary hover:underline"
+            >
               Sign in
             </Link>
           </motion.div>

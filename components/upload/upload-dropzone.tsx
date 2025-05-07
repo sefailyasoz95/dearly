@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
 import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { motion, AnimatePresence } from "framer-motion";
-import { Upload, Image, Film } from "lucide-react";
+import { Cloud, File, Image } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface UploadDropzoneProps {
   onDrop: (acceptedFiles: File[]) => void;
@@ -20,55 +20,52 @@ export function UploadDropzone({ onDrop }: UploadDropzoneProps) {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: onDropCallback,
     accept: {
-      'image/*': [],
-      'video/*': []
-    }
+      "image/*": [],
+      "video/*": [],
+    },
+    maxSize: 30 * 1024 * 1024, // 30MB
   });
 
   return (
-    <div
-      {...getRootProps()}
-      className="border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer transition-colors hover:border-primary/50 hover:bg-muted/50"
+    <Card
+      className={`border-2 border-dashed rounded-lg ${
+        isDragActive
+          ? "border-primary bg-primary/5"
+          : "border-muted-foreground/25 bg-background hover:bg-muted/50"
+      } transition-colors`}
     >
-      <input {...getInputProps()} />
-      <AnimatePresence mode="wait">
-        {isDragActive ? (
-          <motion.div
-            key="dragging"
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -5 }}
-            className="flex flex-col items-center"
-          >
-            <div className="rounded-full bg-primary/10 p-4 mb-4">
-              <Upload className="h-8 w-8 text-primary" />
+      <CardContent
+        {...getRootProps()}
+        className="flex flex-col items-center justify-center py-10 text-center cursor-pointer"
+      >
+        <input {...getInputProps()} />
+
+        <div className="flex flex-col items-center justify-center space-y-2">
+          {isDragActive ? (
+            <Cloud className="h-10 w-10 text-primary animate-bounce" />
+          ) : (
+            <div className="flex items-center justify-center">
+              <Image className="h-8 w-8 text-muted-foreground mr-2" />
+              <File className="h-8 w-8 text-muted-foreground" />
             </div>
-            <p className="text-lg font-medium text-primary">Drop your files here</p>
-          </motion.div>
-        ) : (
-          <motion.div 
-            key="idle"
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -5 }}
-            className="flex flex-col items-center"
-          >
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <div className="rounded-full bg-primary/10 p-2">
-                <Image className="h-5 w-5 text-primary" />
-              </div>
-              <div className="rounded-full bg-primary/10 p-2">
-                <Film className="h-5 w-5 text-primary" />
-              </div>
-            </div>
-            <p className="font-medium mb-1">Drag & drop your photos and videos here</p>
-            <p className="text-sm text-muted-foreground mb-4">Or click to browse your files</p>
-            <p className="text-xs text-muted-foreground">
-              Supports images (JPG, PNG, GIF) and videos (MP4, MOV)
+          )}
+
+          <div className="flex flex-col items-center">
+            <p className="text-base font-medium">
+              {isDragActive
+                ? "Drop your files here"
+                : "Drag & drop your files here"}
             </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+            <p className="text-sm text-muted-foreground">
+              or click to browse your device
+            </p>
+          </div>
+
+          <p className="text-xs text-muted-foreground pt-2">
+            Supports images and videos up to 30MB
+          </p>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

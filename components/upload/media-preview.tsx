@@ -1,9 +1,10 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react";
-import { X } from "lucide-react";
+import { X, FileVideo, FileImage } from "lucide-react";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
+import Image from "next/image";
+import { useEffect, useState } from "react";
 
 interface MediaPreviewProps {
   files: File[];
@@ -14,64 +15,85 @@ export function MediaPreview({ files, onRemove }: MediaPreviewProps) {
   const [previews, setPreviews] = useState<string[]>([]);
 
   useEffect(() => {
-    // Create object URLs for the files
-    const urls = files.map(file => URL.createObjectURL(file));
-    setPreviews(urls);
+    // Create object URLs for preview
+    const objectUrls = files.map((file) => URL.createObjectURL(file));
+    setPreviews(objectUrls);
 
-    // Clean up the object URLs when the component unmounts or when files change
+    // Clean up function to revoke object URLs
     return () => {
-      urls.forEach(url => URL.revokeObjectURL(url));
+      objectUrls.forEach((url) => URL.revokeObjectURL(url));
     };
   }, [files]);
 
   if (files.length === 0) {
     return (
-      <div className="text-center py-6 border-2 border-dashed border-border rounded-lg">
+      <div className="text-center p-4 border border-dashed rounded-lg bg-muted/20">
         <p className="text-sm text-muted-foreground">No files selected</p>
       </div>
     );
   }
 
   return (
-    <>
-      {previews.map((preview, index) => (
-        <motion.div
-          key={index}
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3 }}
-          className="relative rounded-md overflow-hidden border border-border group"
-        >
-          {files[index].type.startsWith('video/') ? (
-            <video
-              src={preview}
-              className="w-full h-auto object-cover"
-              style={{ maxHeight: "180px" }}
-              controls
-            />
-          ) : (
-            <img
-              src={preview}
-              alt={`Preview ${index}`}
-              className="w-full h-auto object-cover"
-              style={{ maxHeight: "180px" }}
-            />
-          )}
-          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <Button
-              variant="destructive"
-              size="icon"
-              className="h-6 w-6 rounded-full"
-              onClick={() => onRemove(index)}
-            >
-              <X className="h-3 w-3" />
-            </Button>
-          </div>
-          <div className="p-2 text-xs truncate">
-            {files[index].name}
-          </div>
-        </motion.div>
-      ))}
-    </>
+    <div className="space-y-2">
+      {files.map((file, index) => {
+        const isImage = file.type.startsWith("image/");
+        const isVideo = file.type.startsWith("video/");
+
+        return (
+          <Card key={index} className="relative overflow-hidden group">
+            <div className="p-2 flex items-center gap-2">
+              {isImage && previews[index] ? (
+                <div className="relative w-full h-24 rounded-md overflow-hidden">
+                  <Image
+                    src={previews[index]}
+                    alt={file.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              ) : isVideo && previews[index] ? (
+                <div className="rounded-md overflow-hidden bg-black w-full">
+                  <video
+                    src={previews[index]}
+                    className="max-h-24 mx-auto"
+                    controls={false}
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <FileVideo className="h-10 w-10 text-primary-foreground opacity-70" />
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center w-full h-24 rounded-md bg-muted/20">
+                  {isImage ? (
+                    <FileImage className="h-8 w-8 text-muted-foreground" />
+                  ) : (
+                    <FileVideo className="h-8 w-8 text-muted-foreground" />
+                  )}
+                </div>
+              )}
+
+              <div className="absolute top-2 right-2">
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="icon"
+                  className="h-6 w-6 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={() => onRemove(index)}
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
+            </div>
+
+            <div className="px-2 pb-2">
+              <p className="text-xs truncate">{file.name}</p>
+              <span className="text-xs text-muted-foreground">
+                {(file.size / (1024 * 1024)).toFixed(2)} MB
+              </span>
+            </div>
+          </Card>
+        );
+      })}
+    </div>
   );
 }

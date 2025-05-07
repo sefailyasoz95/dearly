@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -11,12 +11,12 @@ import Link from "next/link";
 
 export default function GalleryPage() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [viewType, setViewType] = useState("grid");
+  const [viewType, setViewType] = useState<"grid" | "list">("grid");
 
   return (
     <div className="container py-6 md:py-10">
       <div className="flex flex-col gap-6">
-        <motion.div 
+        <motion.div
           className="flex flex-col md:flex-row justify-between gap-4"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -24,9 +24,11 @@ export default function GalleryPage() {
         >
           <div className="flex-1">
             <h1 className="text-3xl font-bold mb-1">Your Gallery</h1>
-            <p className="text-muted-foreground">Browse and manage your memories</p>
+            <p className="text-muted-foreground">
+              Browse and manage your memories
+            </p>
           </div>
-          
+
           <div className="flex flex-col sm:flex-row gap-2">
             <Link href="/upload">
               <Button className="w-full sm:w-auto">
@@ -48,14 +50,22 @@ export default function GalleryPage() {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <Tabs defaultValue="grid" value={viewType} onValueChange={setViewType}>
+          <Tabs
+            defaultValue="grid"
+            value={viewType}
+            onValueChange={(e) => setViewType(e as any)}
+          >
             <TabsList>
-              <TabsTrigger value="grid"><Grid className="h-4 w-4" /></TabsTrigger>
-              <TabsTrigger value="list"><List className="h-4 w-4" /></TabsTrigger>
+              <TabsTrigger value="grid">
+                <Grid className="h-4 w-4" />
+              </TabsTrigger>
+              <TabsTrigger value="list">
+                <List className="h-4 w-4" />
+              </TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
-        
+
         <AnimatePresence mode="wait">
           <motion.div
             key={viewType}

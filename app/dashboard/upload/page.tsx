@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useState, useCallback } from "react";
 import { useForm } from "react-hook-form";
@@ -16,7 +16,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { UploadDropzone } from "@/components/upload/upload-dropzone";
 import { MediaPreview } from "@/components/upload/media-preview";
 import { useRouter } from "next/navigation";
@@ -44,24 +50,24 @@ export default function UploadPage() {
   const [uploading, setUploading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-  
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
       description: "",
       album: "",
-      date: new Date().toISOString().split('T')[0],
+      date: new Date().toISOString().split("T")[0],
     },
   });
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     // Filter for image and video files
-    const mediaFiles = acceptedFiles.filter(file => 
-      file.type.startsWith('image/') || file.type.startsWith('video/')
+    const mediaFiles = acceptedFiles.filter(
+      (file) => file.type.startsWith("image/") || file.type.startsWith("video/")
     );
-    
-    setFiles(prev => [...prev, ...mediaFiles]);
+
+    setFiles((prev) => [...prev, ...mediaFiles]);
   }, []);
 
   const removeFile = (index: number) => {
@@ -77,25 +83,27 @@ export default function UploadPage() {
       });
       return;
     }
-    
+
     setUploading(true);
-    
+
     // Simulate upload process
     setTimeout(() => {
       setUploading(false);
       toast({
         title: "Upload successful",
-        description: `${files.length} ${files.length === 1 ? 'file' : 'files'} uploaded to ${values.album}.`,
+        description: `${files.length} ${
+          files.length === 1 ? "file" : "files"
+        } uploaded to ${values.album}.`,
       });
       router.push("/gallery");
     }, 2000);
-    
+
     console.log(values, files);
   }
 
   return (
     <div className="container py-6 md:py-10">
-      <motion.div 
+      <motion.div
         className="max-w-3xl mx-auto"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -103,18 +111,23 @@ export default function UploadPage() {
       >
         <div className="mb-6">
           <h1 className="text-3xl font-bold mb-1">Upload Memories</h1>
-          <p className="text-muted-foreground">Add new photos and videos to your collection</p>
+          <p className="text-muted-foreground">
+            Add new photos and videos to your collection
+          </p>
         </div>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6">
           <div className="space-y-6">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.1 }}
             >
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-6"
+                >
                   <FormField
                     control={form.control}
                     name="title"
@@ -122,13 +135,16 @@ export default function UploadPage() {
                       <FormItem>
                         <FormLabel>Title</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter a title for these memories" {...field} />
+                          <Input
+                            placeholder="Enter a title for these memories"
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={form.control}
                     name="description"
@@ -136,8 +152,8 @@ export default function UploadPage() {
                       <FormItem>
                         <FormLabel>Description</FormLabel>
                         <FormControl>
-                          <Textarea 
-                            placeholder="Add some details about these memories" 
+                          <Textarea
+                            placeholder="Add some details about these memories"
                             className="resize-none"
                             {...field}
                           />
@@ -149,7 +165,7 @@ export default function UploadPage() {
                       </FormItem>
                     )}
                   />
-                  
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
@@ -157,8 +173,8 @@ export default function UploadPage() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Album</FormLabel>
-                          <Select 
-                            onValueChange={field.onChange} 
+                          <Select
+                            onValueChange={field.onChange}
                             defaultValue={field.value}
                           >
                             <FormControl>
@@ -167,7 +183,7 @@ export default function UploadPage() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {albums.map(album => (
+                              {albums.map((album) => (
                                 <SelectItem key={album.id} value={album.id}>
                                   {album.name}
                                 </SelectItem>
@@ -178,7 +194,7 @@ export default function UploadPage() {
                         </FormItem>
                       )}
                     />
-                    
+
                     <FormField
                       control={form.control}
                       name="date"
@@ -193,11 +209,11 @@ export default function UploadPage() {
                       )}
                     />
                   </div>
-                  
+
                   <div className="pt-2">
                     <UploadDropzone onDrop={onDrop} />
                   </div>
-                  
+
                   <div className="flex justify-end">
                     <Button type="submit" disabled={uploading}>
                       {uploading ? "Uploading..." : "Upload Memories"}
@@ -207,9 +223,11 @@ export default function UploadPage() {
               </Form>
             </motion.div>
           </div>
-          
+
           <div>
-            <h3 className="font-medium mb-3">Selected Media ({files.length})</h3>
+            <h3 className="font-medium mb-3">
+              Selected Media ({files.length})
+            </h3>
             <div className="space-y-2 overflow-auto max-h-[calc(100vh-300px)] pr-2">
               <MediaPreview files={files} onRemove={removeFile} />
             </div>
