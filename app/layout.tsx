@@ -9,22 +9,31 @@ import { cn } from "@/lib/utils";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-	title: "Dearly - Family Memories Archive",
-	description: "Store and treasure your family memories forever",
+  title: "Dearly - Family Memories Archive",
+  description: "Store and treasure your family memories forever",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-	return (
-		<html lang='en' suppressHydrationWarning>
-			<body className={cn(inter.className, "min-h-screen bg-background")}>
-				<ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
-					<div className='relative flex min-h-screen flex-col items-center'>
-						<Header />
-						<main className='flex-1'>{children}</main>
-						<Toaster />
-					</div>
-				</ThemeProvider>
-			</body>
-		</html>
-	);
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body className={cn(inter.className, "min-h-screen bg-background")}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <div className="relative flex min-h-screen flex-col items-center">
+            <Header />
+            <main className="flex-1">{children}</main>
+            <Toaster />
+          </div>
+        </ThemeProvider>
+      </body>
+    </html>
+  );
 }

@@ -14,7 +14,7 @@ export default function GalleryPage() {
   const [viewType, setViewType] = useState<"grid" | "list">("grid");
 
   return (
-    <div className="container py-6 md:py-10">
+    <div className="p-6 mx-auto md:p-10 w-screen">
       <div className="flex flex-col gap-6">
         <motion.div
           className="flex flex-col md:flex-row justify-between gap-4"
