@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { createRef, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { Album } from "@/types/supabase";
 
 const albumIcons = [
 	{ icon: MapPin, color: "from-red-500/20 to-orange-500/20" },
@@ -64,14 +65,23 @@ export default function AlbumsPage() {
 	const [newAlbumName, setNewAlbumName] = useState("");
 	const [selectedIcon, setSelectedIcon] = useState(0);
 	const [searchQuery, setSearchQuery] = useState("");
-
-	const filteredAlbums = demoAlbums.filter((album) => album.name.toLowerCase().includes(searchQuery.toLowerCase()));
-
+	const [albums, setAlbums] = useState<Album[]>([]);
+	const uploadRef = createRef<HTMLInputElement>();
 	const handleCreateAlbum = () => {
 		console.log("Creating new album:", { name: newAlbumName, icon: selectedIcon });
 		setNewAlbumName("");
 		setSelectedIcon(0);
 	};
+	const getAlbums = async () => {
+		try {
+			const response = await fetch("/api/albums");
+			const data = await response.json();
+			setAlbums(data.albums);
+		} catch (error) {}
+	};
+	useEffect(() => {
+		getAlbums();
+	}, []);
 
 	return (
 		<div className='container py-6 md:py-10'>
@@ -109,22 +119,13 @@ export default function AlbumsPage() {
 										/>
 									</div>
 									<div className='space-y-2'>
-										<Label>Choose an icon</Label>
-										<div className='grid grid-cols-4 gap-2'>
-											{albumIcons.map((icon, index) => {
-												const Icon = icon.icon;
-												return (
-													<Button
-														key={index}
-														type='button'
-														variant='outline'
-														className={cn("h-12 w-12 p-0", selectedIcon === index && "border-primary")}
-														onClick={() => setSelectedIcon(index)}>
-														<Icon className='h-6 w-6' />
-													</Button>
-												);
-											})}
-										</div>
+										<input className='hidden' ref={uploadRef} type='image/*' />
+										<Button
+											onClick={() => {
+												uploadRef.current?.click();
+											}}>
+											Upload Photo
+										</Button>
 									</div>
 									<div className='flex justify-end'>
 										<Button onClick={handleCreateAlbum} disabled={!newAlbumName.trim()}>
@@ -151,8 +152,7 @@ export default function AlbumsPage() {
 					initial={{ opacity: 0 }}
 					animate={{ opacity: 1 }}
 					transition={{ duration: 0.4, delay: 0.1 }}>
-					{filteredAlbums.map((album, index) => {
-						const Icon = album.icon;
+					{albums.map((album, index) => {
 						return (
 							<motion.div
 								key={album.id}
@@ -161,12 +161,18 @@ export default function AlbumsPage() {
 								transition={{ duration: 0.5, delay: index * 0.1 }}>
 								<Link href={`/dashboard/gallery?album=${album.id}`}>
 									<Card className='group relative overflow-hidden border-border/40 hover:bg-accent/50 transition-colors'>
-										<div className={cn("absolute inset-0 bg-gradient-to-br opacity-50", album.gradientColor)} />
+										<div
+											className={cn(
+												"absolute inset-0 bg-cover bg-center opacity-50",
+												!album.cover_image && "from-blue-500/20 to-indigo-500/20"
+											)}
+											style={{ backgroundImage: `url(${album.cover_image})` }}
+										/>
 										<div className='relative p-6'>
 											<div className='flex justify-between items-start'>
-												<div className='bg-background/80 backdrop-blur-sm rounded-full p-3'>
+												{/* <div className='bg-background/80 backdrop-blur-sm rounded-full p-3'>
 													<Icon className='h-6 w-6' />
-												</div>
+												</div> */}
 												<DropdownMenu>
 													<DropdownMenuTrigger asChild>
 														<Button variant='ghost' size='icon' className='h-8 w-8'>
@@ -183,7 +189,7 @@ export default function AlbumsPage() {
 											</div>
 											<div className='mt-4'>
 												<h3 className='font-medium text-lg'>{album.name}</h3>
-												<p className='text-sm text-muted-foreground'>{album.count} photos</p>
+												{/* <p className='text-sm text-muted-foreground'>{album.count} photos</p> */}
 											</div>
 										</div>
 									</Card>
